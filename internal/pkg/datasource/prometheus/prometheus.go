@@ -5,8 +5,8 @@ package prometheus
 type Prometheus struct {
 }
 
-// GetMetrics gets metrics from Prometheus and satisfies the
+// GetShardServers gets metrics from Prometheus and satisfies the
 // datasource.Provider interface.
-func (prom *Prometheus) GetMetrics() (int, error) {
-	return 0, nil
+func (prom *Prometheus) GetShardServers() ([]int, error) {
+	return make([]int, 0), nil
 }
