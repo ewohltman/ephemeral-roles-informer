@@ -19,8 +19,8 @@ const (
 	prometheusURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
 	query         = `ephemeral_roles_guilds_count{pod=~"ephemeral-roles-.+"}`
 
-	queryError    = "query Prometheus error"
-	queryWarnings = "query Prometheus warnings"
+	queryError    = "error querying Prometheus"
+	queryWarnings = "warning querying Prometheus"
 )
 
 // Compile time error if *Prometheus does not satisfy the datasource.Provider
