@@ -1,39 +1,57 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/prometheus/client_golang/api"
-	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"time"
 
 	"github.com/ewohltman/dbl-updater/internal/pkg/datasource/prometheus"
+	"github.com/ewohltman/dbl-updater/internal/pkg/discordbotlist"
 )
 
-const promURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
+const (
+	updateInterval = 30 * time.Second
+	contextTimeout = 10 * time.Second
+)
+
+func update(dblClient *discordbotlist.Client) error {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), contextTimeout)
+	defer ctxCancel()
+
+	return dblClient.Update(ctx)
+}
 
 func main() {
 	log.Printf("dbl-updater starting up")
 
-	promClient, err := api.NewClient(api.Config{Address: promURL})
+	datasourceProvider, err := prometheus.New()
 	if err != nil {
 		log.Fatalf("Error creating new Prometheus API client: %s", err)
 	}
 
-	datasourcePrometheus := &prometheus.Prometheus{API: v1.NewAPI(promClient)}
-
-	shardsServerCounts, err := datasourcePrometheus.GetShardsServerCount()
+	dblClient, err := discordbotlist.New("", "", datasourceProvider)
 	if err != nil {
-		log.Fatalf("Error getting shards server count: %s", err)
+		log.Fatalf("Error creating new Discord Bot List client: %s", err)
 	}
 
-	log.Printf("Shard server counts: %v", shardsServerCounts)
-
 	sigTerm := make(chan os.Signal, 1)
-
 	signal.Notify(sigTerm, syscall.SIGTERM)
 
-	<-sigTerm
+	ticker := time.NewTicker(updateInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			err = update(dblClient)
+			if err != nil {
+				log.Printf("Error updating Discord Bot List: %s", err)
+			}
+		case <-sigTerm:
+			return
+		}
+	}
 }
