@@ -35,7 +35,12 @@ func (prom *Prometheus) GetShardsServerCount() ([]int, error) {
 		return nil, fmt.Errorf("query Prometheus warnings: %s", strings.Join(warnings, ", "))
 	}
 
-	fmt.Printf("Prometheus query result: %s\n", result)
+	resultBytes, err := result.Type().MarshalJSON()
+	if err != nil {
+		return nil, fmt.Errorf("marshal Prometheus results error: %w", err)
+	}
+
+	fmt.Printf("Prometheus query result: %s\n", string(resultBytes))
 
 	return make([]int, 0), nil
 }
