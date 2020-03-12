@@ -9,7 +9,7 @@ import (
 	"github.com/ewohltman/dbl-updater/internal/pkg/datasource/prometheus"
 )
 
-const promURL = "http://prometheus-k8s.monitoring.svc.cluster"
+const promURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
 
 func main() {
 	promClient, err := api.NewClient(api.Config{Address: promURL})
