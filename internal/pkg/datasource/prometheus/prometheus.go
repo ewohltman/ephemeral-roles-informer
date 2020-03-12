@@ -4,15 +4,20 @@ package prometheus
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"github.com/prometheus/common/model"
 )
 
 const (
 	contextTimeout = 10 * time.Second
-	query          = `ephemeral_roles_guilds_count{pod=~"ephemeral-roles-.+"}`
+
+	query         = `ephemeral_roles_guilds_count{pod=~"ephemeral-roles-.+"}`
+	queryError    = "query Prometheus error"
+	queryWarnings = "query Prometheus warnings"
 )
 
 // Prometheus contains fields for querying a Prometheus datasource.
@@ -28,19 +33,28 @@ func (prom *Prometheus) GetShardsServerCount() ([]int, error) {
 
 	result, warnings, err := prom.API.Query(ctx, query, time.Now())
 	if err != nil {
-		return nil, fmt.Errorf("query Prometheus error: %w", err)
+		return nil, fmt.Errorf("%s: %w", queryError, err)
 	}
 
 	if len(warnings) > 0 {
-		return nil, fmt.Errorf("query Prometheus warnings: %s", strings.Join(warnings, ", "))
+		return nil, fmt.Errorf("%s: %s", queryWarnings, strings.Join(warnings, ", "))
 	}
 
-	resultBytes, err := result.Type().MarshalJSON()
-	if err != nil {
-		return nil, fmt.Errorf("marshal Prometheus results error: %w", err)
+	resultVector, ok := result.(model.Vector)
+	if !ok {
+		return nil, fmt.Errorf("%s: unable to type assert result vector", queryError)
 	}
 
-	fmt.Printf("Prometheus query result: %s\n", string(resultBytes))
+	shardsServerCounts := make([]int, len(resultVector))
 
-	return make([]int, 0), nil
+	for i, sample := range resultVector {
+		intVal, err := strconv.Atoi(sample.Value.String())
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", queryError, err)
+		}
+
+		shardsServerCounts[i] = intVal
+	}
+
+	return shardsServerCounts, nil
 }
