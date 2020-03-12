@@ -21,7 +21,8 @@ image:
 push:
 	docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
 	docker push ewohltman/dbl-updater:latest
-	docker logout
 
 deploy:
 	${MAKEFILE_DIR}/scripts/deploy.sh
+
+all: lint test build image push deploy

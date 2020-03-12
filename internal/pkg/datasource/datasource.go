@@ -3,5 +3,5 @@ package datasource
 
 // Provider is an interface for abstracting backend data providers.
 type Provider interface {
-	GetShardServers() ([]int, error)
+	GetShardsServerCount() ([]int, error)
 }

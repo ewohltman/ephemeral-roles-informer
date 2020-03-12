@@ -15,7 +15,7 @@ type Client struct {
 	BotID  string
 }
 
-// New returns a new *Client to update server counts.
+// New returns a new *API to update server counts.
 func New(token string) (*Client, error) {
 	client, err := dbl.NewClient(token)
 	if err != nil {
@@ -28,7 +28,7 @@ func New(token string) (*Client, error) {
 // Update updates Discord Bot List with server counts obtained from the given
 // datasource.Provider.
 func (discordBotList Client) Update(provider datasource.Provider) error {
-	shardServers, err := provider.GetShardServers()
+	shardServers, err := provider.GetShardsServerCount()
 	if err != nil {
 		return fmt.Errorf("error getting server counts from datastore: %w", err)
 	}
