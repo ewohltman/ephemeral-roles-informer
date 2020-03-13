@@ -60,6 +60,10 @@ func (prom *Prometheus) ProvideShardServerCounts(ctx context.Context) ([]int, er
 		return nil, fmt.Errorf("%s: unable to type assert result vector", queryError)
 	}
 
+	return prom.convertResults(resultVector)
+}
+
+func (prom *Prometheus) convertResults(resultVector model.Vector) ([]int, error) {
 	shardServerCounts := make([]int, len(resultVector))
 
 	for i, sample := range resultVector {
