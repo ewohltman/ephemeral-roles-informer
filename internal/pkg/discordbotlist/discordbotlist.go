@@ -57,17 +57,6 @@ func (client *Client) Update(ctx context.Context) error {
 	defer client.mutex.Unlock()
 
 	if sum > client.lastShardServerCountsSum {
-		// nolint:gocritic // will enable this later
-		/*err = client.dblClient.PostBotStats(
-			client.dblBotID,
-			dbl.BotStatsPayload{
-				Shards: shardServerCounts,
-			},
-		)
-		if err != nil {
-			return fmt.Errorf("error sending bot stats: %w", err)
-		}*/
-
 		client.lastShardServerCountsSum = sum
 
 		log.Printf("Updated Discord Bot List: %d", client.lastShardServerCountsSum)

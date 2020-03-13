@@ -15,6 +15,8 @@ import (
 const (
 	updateInterval = 30 * time.Second
 	contextTimeout = 10 * time.Second
+
+	prometheusURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
 )
 
 func update(dblClient *discordbotlist.Client) error {
@@ -27,9 +29,9 @@ func update(dblClient *discordbotlist.Client) error {
 func main() {
 	log.Printf("dbl-updater starting up")
 
-	datastoreProvider, err := prometheus.New()
+	datastoreProvider, err := prometheus.NewProvider(prometheusURL)
 	if err != nil {
-		log.Fatalf("Error creating new Prometheus API client: %s", err)
+		log.Fatalf("Error creating new Prometheus provider: %s", err)
 	}
 
 	dblClient, err := discordbotlist.New("", "", datastoreProvider)

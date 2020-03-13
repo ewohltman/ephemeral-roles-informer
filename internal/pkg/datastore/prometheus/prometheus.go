@@ -16,36 +16,34 @@ import (
 )
 
 const (
-	prometheusURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
-	query         = `ephemeral_roles_guilds_count{pod=~"ephemeral-roles-.+"}`
+	query = `ephemeral_roles_guilds_count`
 
 	queryError    = "error querying Prometheus"
 	queryWarnings = "warning querying Prometheus"
 )
 
-// Compile time check if *Prometheus does not satisfy the datastore.Provider
+// Compile time check if *Provider does not satisfy the datastore.Provider
 // interface.
-var _ datastore.Provider = &Prometheus{}
+var _ datastore.Provider = &Provider{}
 
-// Prometheus provides methods for querying a Prometheus datastore and
-// satisfies the datastore.Provider interface.
-type Prometheus struct {
+// Provider provides methods for querying a Prometheus server.
+type Provider struct {
 	API v1.API
 }
 
-// New returns a new *Prometheus instance for querying Prometheus metrics.
-func New() (*Prometheus, error) {
+// NewProvider returns a new *Provider for querying a Prometheus server.
+func NewProvider(prometheusURL string) (*Provider, error) {
 	client, err := api.NewClient(api.Config{Address: prometheusURL})
 	if err != nil {
 		return nil, err
 	}
 
-	return &Prometheus{API: v1.NewAPI(client)}, nil
+	return &Provider{API: v1.NewAPI(client)}, nil
 }
 
-// ProvideShardServerCounts gets metrics from Prometheus and satisfies the
-// datastore.Provider interface.
-func (prom *Prometheus) ProvideShardServerCounts(ctx context.Context) ([]int, error) {
+// ProvideShardServerCounts queries metrics from a Prometheus server and
+// satisfies the datastore.Provider interface.
+func (prom *Provider) ProvideShardServerCounts(ctx context.Context) ([]int, error) {
 	result, warnings, err := prom.API.Query(ctx, query, time.Now())
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", queryError, err)
@@ -63,7 +61,7 @@ func (prom *Prometheus) ProvideShardServerCounts(ctx context.Context) ([]int, er
 	return prom.convertResults(resultVector)
 }
 
-func (prom *Prometheus) convertResults(resultVector model.Vector) ([]int, error) {
+func (prom *Provider) convertResults(resultVector model.Vector) ([]int, error) {
 	shardServerCounts := make([]int, len(resultVector))
 
 	for i, sample := range resultVector {
