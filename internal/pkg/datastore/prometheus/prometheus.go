@@ -23,7 +23,7 @@ const (
 	queryWarnings = "warning querying Prometheus"
 )
 
-// Compile time error if *Prometheus does not satisfy the datastore.Provider
+// Compile time check if *Prometheus does not satisfy the datastore.Provider
 // interface.
 var _ datastore.Provider = &Prometheus{}
 
