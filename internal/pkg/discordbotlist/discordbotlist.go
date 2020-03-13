@@ -12,11 +12,11 @@ import (
 	"github.com/ewohltman/dbl-updater/internal/pkg/datastore"
 )
 
-// Client contains a *dbl.DBLClient, botID, and datastore.Provider for updating
+// Client contains a *dbl.DBLClient, dblBotID, and datastore.Provider for updating
 // Discord Bots List.
 type Client struct {
 	dblClient         *dbl.DBLClient
-	botID             string
+	dblBotID          string
 	datastoreProvider datastore.Provider
 
 	mutex                    sync.Mutex
@@ -24,7 +24,7 @@ type Client struct {
 }
 
 // New returns a new *Client to update Discord Bots List.
-func New(botID, token string, datastoreProvider datastore.Provider) (*Client, error) {
+func New(dblBotID, token string, datastoreProvider datastore.Provider) (*Client, error) {
 	client, err := dbl.NewClient(token)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func New(botID, token string, datastoreProvider datastore.Provider) (*Client, er
 
 	return &Client{
 		dblClient:         client,
-		botID:             botID,
+		dblBotID:          dblBotID,
 		datastoreProvider: datastoreProvider,
 	}, nil
 }
@@ -59,7 +59,7 @@ func (client *Client) Update(ctx context.Context) error {
 	if sum > client.lastShardServerCountsSum {
 		// nolint:gocritic // will enable this later
 		/*err = client.dblClient.PostBotStats(
-			client.botID,
+			client.dblBotID,
 			dbl.BotStatsPayload{
 				Shards: shardServerCounts,
 			},
