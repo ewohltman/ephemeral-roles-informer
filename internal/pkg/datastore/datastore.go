@@ -1,5 +1,5 @@
-// Package datasource provides an abstraction point for backend data providers.
-package datasource
+// Package datastore provides an abstraction point for backend data providers.
+package datastore
 
 import "context"
 

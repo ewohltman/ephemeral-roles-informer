@@ -8,34 +8,35 @@ import (
 
 	"github.com/DiscordBotList/go-dbl"
 
-	"github.com/ewohltman/dbl-updater/internal/pkg/datasource"
+	"github.com/ewohltman/dbl-updater/internal/pkg/datastore"
 )
 
-// Client contains a *dbl.DBLClient and botID for updating Discord Bots List.
+// Client contains a *dbl.DBLClient, botID, and datastore.Provider for updating
+// Discord Bots List.
 type Client struct {
-	dblClient          *dbl.DBLClient
-	botID              string
-	datasourceProvider datasource.Provider
+	dblClient         *dbl.DBLClient
+	botID             string
+	datastoreProvider datastore.Provider
 }
 
-// New returns a new *API to update server counts.
-func New(botID, token string, datasourceProvider datasource.Provider) (*Client, error) {
+// New returns a new *Client to update Discord Bots List.
+func New(botID, token string, datastoreProvider datastore.Provider) (*Client, error) {
 	client, err := dbl.NewClient(token)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Client{
-		dblClient:          client,
-		botID:              botID,
-		datasourceProvider: datasourceProvider,
+		dblClient:         client,
+		botID:             botID,
+		datastoreProvider: datastoreProvider,
 	}, nil
 }
 
-// Update updates Discord Bot List with server counts obtained from the given
-// datasource.Provider.
+// Update updates Discord Bot List with server counts obtained from a
+// datastore.Provider.
 func (client *Client) Update(ctx context.Context) error {
-	shardServerCounts, err := client.datasourceProvider.ProvideShardServerCounts(ctx)
+	shardServerCounts, err := client.datastoreProvider.ProvideShardServerCounts(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting shard server counts from datastore provider: %w", err)
 	}

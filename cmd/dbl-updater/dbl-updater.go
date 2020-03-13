@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ewohltman/dbl-updater/internal/pkg/datasource/prometheus"
+	"github.com/ewohltman/dbl-updater/internal/pkg/datastore/prometheus"
 	"github.com/ewohltman/dbl-updater/internal/pkg/discordbotlist"
 )
 
@@ -27,12 +27,12 @@ func update(dblClient *discordbotlist.Client) error {
 func main() {
 	log.Printf("dbl-updater starting up")
 
-	datasourceProvider, err := prometheus.New()
+	datastoreProvider, err := prometheus.New()
 	if err != nil {
 		log.Fatalf("Error creating new Prometheus API client: %s", err)
 	}
 
-	dblClient, err := discordbotlist.New("", "", datasourceProvider)
+	dblClient, err := discordbotlist.New("", "", datastoreProvider)
 	if err != nil {
 		log.Fatalf("Error creating new Discord Bot List client: %s", err)
 	}

@@ -1,4 +1,4 @@
-// Package prometheus provides a Prometheus implementation of a datasource.Provider.
+// Package prometheus provides a Prometheus implementation of a datastore.Provider.
 package prometheus
 
 import (
@@ -12,7 +12,7 @@ import (
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 
-	"github.com/ewohltman/dbl-updater/internal/pkg/datasource"
+	"github.com/ewohltman/dbl-updater/internal/pkg/datastore"
 )
 
 const (
@@ -23,12 +23,12 @@ const (
 	queryWarnings = "warning querying Prometheus"
 )
 
-// Compile time error if *Prometheus does not satisfy the datasource.Provider
+// Compile time error if *Prometheus does not satisfy the datastore.Provider
 // interface.
-var _ datasource.Provider = &Prometheus{}
+var _ datastore.Provider = &Prometheus{}
 
-// Prometheus provides methods for querying a Prometheus datasource and
-// satisfies the datasource.Provider interface.
+// Prometheus provides methods for querying a Prometheus datastore and
+// satisfies the datastore.Provider interface.
 type Prometheus struct {
 	API v1.API
 }
@@ -44,7 +44,7 @@ func New() (*Prometheus, error) {
 }
 
 // ProvideShardServerCounts gets metrics from Prometheus and satisfies the
-// datasource.Provider interface.
+// datastore.Provider interface.
 func (prom *Prometheus) ProvideShardServerCounts(ctx context.Context) ([]int, error) {
 	result, warnings, err := prom.API.Query(ctx, query, time.Now())
 	if err != nil {
