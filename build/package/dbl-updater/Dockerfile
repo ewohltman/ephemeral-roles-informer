@@ -1,4 +1,4 @@
-FROM scratch
+FROM alpine:latest
 
 COPY dbl-updater .
 
