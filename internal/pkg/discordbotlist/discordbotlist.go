@@ -25,8 +25,8 @@ type Client struct {
 	dblBotID          string
 	datastoreProvider datastore.Provider
 
-	mutex                    sync.Mutex
-	lastShardServerCountsSum int
+	mutex            sync.Mutex
+	lastServerCounts int
 }
 
 // New returns a new *Client to update Discord Bots List.
@@ -51,17 +51,17 @@ func (client *Client) Update(ctx context.Context) error {
 		return fmt.Errorf("error getting shard server counts from datastore provider: %w", err)
 	}
 
-	sum := 0
+	serverCounts := 0
 
 	for _, shardServerCount := range shardServerCounts {
-		sum += shardServerCount
+		serverCounts += shardServerCount
 	}
 
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
 
-	if sum > client.lastShardServerCountsSum {
-		client.lastShardServerCountsSum = sum
+	if serverCounts > client.lastServerCounts {
+		client.lastServerCounts = serverCounts
 
 		err = client.dblClient.PostBotStats(
 			client.dblBotID,
@@ -73,7 +73,7 @@ func (client *Client) Update(ctx context.Context) error {
 			return fmt.Errorf("error sending bot stats: %w", err)
 		}
 
-		log.Printf("Updated Discord Bot List: %d", client.lastShardServerCountsSum)
+		log.Printf("Updated Discord Bot List: %d", client.lastServerCounts)
 	}
 
 	return nil
