@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbl-updater
+  namespace: ephemeral-roles
+  labels:
+    app: dbl-updater
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dbl-updater
+  template:
+    metadata:
+      labels:
+        app: dbl-updater
+        version: "{COMMIT}"
+    spec:
+      containers:
+        - name: dbl-updater
+          image: ewohltman/dbl-updater:latest
+          imagePullPolicy: Always
+          env:
+            - name: DBL_BOT_ID
+              value: "{DBL_BOT_ID}"
+            - name: DBL_BOT_TOKEN
+              value: "{DBL_BOT_TOKEN}"
+          resources:
+            limits:
+              cpu: "50m"
+              memory: "256Mi"
+            requests:
+              cpu: "50m"
+              memory: "256Mi"

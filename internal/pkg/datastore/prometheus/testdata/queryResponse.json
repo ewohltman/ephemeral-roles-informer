@@ -1,0 +1,158 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "vector",
+    "result": [
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.0.201:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-8",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "31"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.0.202:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-1",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "28"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.1.50:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-3",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "27"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.2.68:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-4",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "23"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.2.69:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-2",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "26"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.2.70:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-0",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "19"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.3.53:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-7",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "24"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.3.54:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-5",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "23"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.4.48:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-9",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "17"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "ephemeral_roles_guilds_count",
+          "endpoint": "http",
+          "instance": "10.2.4.4:8080",
+          "job": "ephemeral-roles",
+          "namespace": "ephemeral-roles",
+          "pod": "ephemeral-roles-6",
+          "service": "ephemeral-roles"
+        },
+        "value": [
+          1584104572.266,
+          "28"
+        ]
+      }
+    ]
+  }
+}
