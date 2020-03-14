@@ -3,6 +3,9 @@
 set -e
 set -o pipefail # Only exit with zero if all commands of the pipeline exit successfully
 
+[[ -z ${DBL_BOT_ID} ]] && echo "DBL_BOT_ID not defined" && exit 1
+[[ -z ${DBL_BOT_TOKEN} ]] && echo "DBL_BOT_TOKEN not defined" && exit 1
+
 SCRIPT_PATH=$(readlink -f "${0}")
 SCRIPT_DIR=$(dirname "${SCRIPT_PATH}")
 
@@ -19,6 +22,8 @@ setup() {
 
 applyValues() {
   sed -i "s|{COMMIT}|${COMMIT}|g" "${VARIABLIZED_DEPLOYMENT_YML}"
+  sed -i "s|{DBL_BOT_ID}|${DBL_BOT_ID}|g" "${VARIABLIZED_DEPLOYMENT_YML}"
+  sed -i "s|{DBL_BOT_TOKEN}|${DBL_BOT_TOKEN}|g" "${VARIABLIZED_DEPLOYMENT_YML}"
 }
 
 deploy() {

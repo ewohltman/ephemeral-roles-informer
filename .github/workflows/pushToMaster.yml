@@ -59,7 +59,8 @@ jobs:
       - name: Deploy to Kubernetes
         env:
           KUBERNETES_CONFIG: "${{ secrets.KUBERNETES_CONFIG }}"
-          DBL_TOKEN: "${{ secrets.BOT_TOKEN }}"
+          DBL_BOT_ID: "${{ secrets.DBL_BOT_ID }}"
+          DBL_BOT_TOKEN: "${{ secrets.DBL_BOT_TOKEN }}"
         run: |
           PATH="${PATH}:$(go env GOPATH)/bin"
           KUBECTL_BIN="$(go env GOPATH)/bin/kubectl"

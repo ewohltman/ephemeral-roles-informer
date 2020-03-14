@@ -24,8 +24,8 @@ spec:
           env:
             - name: DBL_BOT_ID
               value: "{DBL_BOT_ID}"
-            - name: DBL_TOKEN
-              value: "{DBL_TOKEN}"
+            - name: DBL_BOT_TOKEN
+              value: "{DBL_BOT_TOKEN}"
           resources:
             limits:
               cpu: "50m"

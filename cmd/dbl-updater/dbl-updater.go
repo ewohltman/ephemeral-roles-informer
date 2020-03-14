@@ -18,7 +18,7 @@ const (
 	contextTimeout = 10 * time.Second
 
 	envBotID = "DBL_BOT_ID"
-	envToken = "DBL_TOKEN"
+	envToken = "DBL_BOT_TOKEN"
 
 	prometheusURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
 
