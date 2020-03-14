@@ -2,6 +2,7 @@ package prometheus
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -13,8 +14,10 @@ import (
 )
 
 const (
-	contextTimeout    = 10 * time.Second
-	queryResponseFile = "testdata/queryResponse.json"
+	contextTimeout = 10 * time.Second
+
+	queryResponseFile      = "testdata/queryResponse.json"
+	queryErrorResponseFile = "testdata/queryErrorResponse.json"
 )
 
 func TestNew(t *testing.T) {
@@ -33,20 +36,14 @@ func TestProvider_ProvideShardServerCounts(t *testing.T) {
 		t.Errorf("Unexpected success with invalid URL")
 	}
 
-	testPrometheusServer := httptest.NewServer(testServerHandler(t, queryResponseFile))
-	defer testPrometheusServer.Close()
-
-	prometheusProvider, err := NewProvider(testPrometheusServer.URL)
-	if err != nil {
-		t.Fatalf("Error creating new Prometheus provider: %s", err)
+	_, err = testQuery(t, queryErrorResponseFile)
+	if err == nil {
+		t.Errorf("Unexpected success with query error response: %s", err)
 	}
 
-	ctx, ctxCancel := context.WithTimeout(context.Background(), contextTimeout)
-	defer ctxCancel()
-
-	actual, err := prometheusProvider.ProvideShardServerCounts(ctx)
+	actual, err := testQuery(t, queryResponseFile)
 	if err != nil {
-		t.Fatalf("Error getting shard server counts: %s", err)
+		t.Fatalf("Error performing test: %s", err)
 	}
 
 	expected := []int{31, 28, 27, 23, 26, 19, 24, 23, 17, 28}
@@ -58,6 +55,26 @@ func TestProvider_ProvideShardServerCounts(t *testing.T) {
 			expected,
 		)
 	}
+}
+
+func testQuery(t *testing.T, responseFile string) ([]int, error) {
+	testPrometheusServer := httptest.NewServer(testServerHandler(t, responseFile))
+	defer testPrometheusServer.Close()
+
+	prometheusProvider, err := NewProvider(testPrometheusServer.URL)
+	if err != nil {
+		return nil, fmt.Errorf("error creating new Prometheus provider: %w", err)
+	}
+
+	ctx, ctxCancel := context.WithTimeout(context.Background(), contextTimeout)
+	defer ctxCancel()
+
+	actual, err := prometheusProvider.ProvideShardServerCounts(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting shard server counts: %w", err)
+	}
+
+	return actual, nil
 }
 
 func testServerHandler(t *testing.T, responseFile string) http.HandlerFunc {
