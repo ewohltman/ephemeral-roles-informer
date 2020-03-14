@@ -1,4 +1,4 @@
-.PHONY: lint test build docker push deploy
+.PHONY: lint test build docker push deploy all
 
 MAKEFILE_PATH=$(shell readlink -f "${0}")
 MAKEFILE_DIR=$(shell dirname "${MAKEFILE_PATH}")
