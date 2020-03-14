@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -16,10 +17,31 @@ const (
 	updateInterval = 30 * time.Second
 	contextTimeout = 10 * time.Second
 
+	envBotID = "DBL_BOT_ID"
+	envToken = "DBL_TOKEN"
+
 	prometheusURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
+
+	errEnvNotFound = "%s not defined"
 )
 
-func update(dblClient *discordbotlist.Client) error {
+func environmentLookup() (dblBotID, token string, err error) {
+	var found bool
+
+	dblBotID, found = os.LookupEnv(envBotID)
+	if !found {
+		return "", "", fmt.Errorf(errEnvNotFound, envBotID)
+	}
+
+	token, found = os.LookupEnv(envToken)
+	if !found {
+		return "", "", fmt.Errorf(errEnvNotFound, envToken)
+	}
+
+	return
+}
+
+func updateDiscordBotList(dblClient *discordbotlist.Client) error {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), contextTimeout)
 	defer ctxCancel()
 
@@ -29,12 +51,17 @@ func update(dblClient *discordbotlist.Client) error {
 func main() {
 	log.Printf("dbl-updater starting up")
 
+	dblBotID, token, err := environmentLookup()
+	if err != nil {
+		log.Fatalf("Error looking up environment variables: %s", err)
+	}
+
 	datastoreProvider, err := prometheus.NewProvider(prometheusURL)
 	if err != nil {
 		log.Fatalf("Error creating new Prometheus provider: %s", err)
 	}
 
-	dblClient, err := discordbotlist.New("", "", datastoreProvider)
+	dblClient, err := discordbotlist.New(dblBotID, token, datastoreProvider)
 	if err != nil {
 		log.Fatalf("Error creating new Discord Bot List client: %s", err)
 	}
@@ -48,7 +75,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			err = update(dblClient)
+			err = updateDiscordBotList(dblClient)
 			if err != nil {
 				log.Printf("Error updating Discord Bot List: %s", err)
 			}
