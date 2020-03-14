@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"sync"
 
 	"github.com/DiscordBotList/go-dbl"
@@ -12,20 +13,25 @@ import (
 	"github.com/ewohltman/dbl-updater/internal/pkg/datastore"
 )
 
+// HTTPClient is an interface for HTTP client implementations.
+type HTTPClient interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
 // Client contains a *dbl.DBLClient, dblBotID, and datastore.Provider for updating
 // Discord Bots List.
 type Client struct {
-	dblClient         *dbl.DBLClient
+	dblClient         *dbl.Client
 	dblBotID          string
 	datastoreProvider datastore.Provider
 
-	mutex                    sync.Mutex
-	lastShardServerCountsSum int
+	mutex            sync.Mutex
+	lastServerCounts int
 }
 
 // New returns a new *Client to update Discord Bots List.
-func New(dblBotID, token string, datastoreProvider datastore.Provider) (*Client, error) {
-	client, err := dbl.NewClient(token)
+func New(dblBotID, token string, httpClient HTTPClient, datastoreProvider datastore.Provider) (*Client, error) {
+	client, err := dbl.NewClient(token, dbl.HTTPClientOption(httpClient))
 	if err != nil {
 		return nil, err
 	}
@@ -45,21 +51,29 @@ func (client *Client) Update(ctx context.Context) error {
 		return fmt.Errorf("error getting shard server counts from datastore provider: %w", err)
 	}
 
-	log.Printf("Shard server counts: %v", shardServerCounts)
-
-	sum := 0
+	serverCounts := 0
 
 	for _, shardServerCount := range shardServerCounts {
-		sum += shardServerCount
+		serverCounts += shardServerCount
 	}
 
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
 
-	if sum > client.lastShardServerCountsSum {
-		client.lastShardServerCountsSum = sum
+	if serverCounts > client.lastServerCounts {
+		client.lastServerCounts = serverCounts
 
-		log.Printf("Updated Discord Bot List: %d", client.lastShardServerCountsSum)
+		err = client.dblClient.PostBotStats(
+			client.dblBotID,
+			&dbl.BotStatsPayload{
+				Shards: shardServerCounts,
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("error sending bot stats: %w", err)
+		}
+
+		log.Printf("Updated Discord Bot List: %d", client.lastServerCounts)
 	}
 
 	return nil

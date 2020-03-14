@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -61,7 +62,9 @@ func main() {
 		log.Fatalf("Error creating new Prometheus provider: %s", err)
 	}
 
-	dblClient, err := discordbotlist.New(dblBotID, token, datastoreProvider)
+	httpClient := &http.Client{Timeout: contextTimeout}
+
+	dblClient, err := discordbotlist.New(dblBotID, token, httpClient, datastoreProvider)
 	if err != nil {
 		log.Fatalf("Error creating new Discord Bot List client: %s", err)
 	}
