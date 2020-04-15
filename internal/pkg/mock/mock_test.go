@@ -3,6 +3,9 @@ package mock
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"testing"
 )
@@ -17,7 +20,10 @@ func TestProvider_ProvideShardServerCounts(t *testing.T) {
 }
 
 func TestRoundTripperFunc_RoundTrip(t *testing.T) {
-	// TODO
+	err := testRoundTripper(DiscordBotListRoundTripper(t))
+	if err != nil {
+		t.Errorf("Error: %s", err)
+	}
 }
 
 func TestDiscordBotListRoundTripper(t *testing.T) {
@@ -34,7 +40,7 @@ func TestDiscordBotsGGRoundTripper(t *testing.T) {
 	}
 }
 
-func testRoundTripper(rt http.RoundTripper) error {
+func testRoundTripper(rt http.RoundTripper) (err error) {
 	client := &http.Client{Transport: rt}
 
 	req, err := http.NewRequest(http.MethodGet, "http://localhost", bytes.NewReader([]byte("{}")))
@@ -42,7 +48,24 @@ func testRoundTripper(rt http.RoundTripper) error {
 		return err
 	}
 
-	_, err = client.Do(req)
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		closeErr := resp.Body.Close()
+		if closeErr != nil {
+			if err != nil {
+				err = fmt.Errorf("%s: %w", closeErr, err)
+				return
+			}
+
+			err = closeErr
+		}
+	}()
+
+	_, err = io.Copy(ioutil.Discard, resp.Body)
 	if err != nil {
 		return err
 	}
