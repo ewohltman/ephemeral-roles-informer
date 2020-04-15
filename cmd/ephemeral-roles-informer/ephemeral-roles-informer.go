@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ewohltman/dbl-updater/internal/pkg/datastore/prometheus"
-	"github.com/ewohltman/dbl-updater/internal/pkg/discordbotlist"
+	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/datastore/prometheus"
+	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/discordbotlist"
 )
 
 const (
@@ -50,7 +50,7 @@ func updateDiscordBotList(dblClient *discordbotlist.Client) error {
 }
 
 func main() {
-	log.Printf("dbl-updater starting up")
+	log.Printf("ephemeral-roles-informer starting up")
 
 	dblBotID, token, err := environmentLookup()
 	if err != nil {

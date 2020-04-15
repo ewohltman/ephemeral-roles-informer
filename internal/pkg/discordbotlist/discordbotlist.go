@@ -10,7 +10,7 @@ import (
 
 	"github.com/DiscordBotList/go-dbl"
 
-	"github.com/ewohltman/dbl-updater/internal/pkg/datastore"
+	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/datastore"
 )
 
 // HTTPClient is an interface for HTTP client implementations.

@@ -12,7 +12,7 @@ import (
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 
-	"github.com/ewohltman/dbl-updater/internal/pkg/datastore"
+	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/datastore"
 )
 
 const (
