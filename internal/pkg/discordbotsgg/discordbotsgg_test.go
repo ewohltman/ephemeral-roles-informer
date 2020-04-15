@@ -1,4 +1,4 @@
-package discordbotlist
+package discordbotsgg
 
 import (
 	"context"
@@ -12,25 +12,22 @@ import (
 const contextTimeout = 10 * time.Second
 
 func TestNewClient(t *testing.T) {
-	_, err := NewClient(&http.Client{}, "dblBotID", "dblBotToken", &mock.Provider{})
-	if err != nil {
-		t.Fatalf("Error: %s", err)
+	dbggClient := NewClient(&http.Client{}, "dbggBotID", "dbggBotToken", &mock.Provider{})
+	if dbggClient == nil {
+		t.Fatalf("Error: unexpected nil *Client")
 	}
 }
 
 func TestClient_Update(t *testing.T) {
-	transport := mock.DiscordBotListRoundTripper(t)
+	transport := mock.DiscordBotsGGRoundTripper(t)
 	httpClient := &http.Client{Transport: transport}
 
-	dblClient, err := NewClient(httpClient, "dblBotID", "dblBotToken", &mock.Provider{})
-	if err != nil {
-		t.Fatalf("Error: %s", err)
-	}
+	dbggClient := NewClient(httpClient, "dbggBotID", "dbggBotToken", &mock.Provider{})
 
 	ctx, ctxCancel := context.WithTimeout(context.Background(), contextTimeout)
 	defer ctxCancel()
 
-	err = dblClient.Update(ctx)
+	err := dbggClient.Update(ctx)
 	if err != nil {
 		t.Fatalf("Error: %s", err)
 	}

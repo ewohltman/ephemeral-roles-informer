@@ -12,31 +12,51 @@ import (
 
 	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/datastore/prometheus"
 	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/discordbotlist"
+	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/discordbotsgg"
 )
 
 const (
-	updateInterval = 30 * time.Second
-	contextTimeout = 10 * time.Second
+	connectionTimeout = 10 * time.Second
+	contextTimeout    = 20 * time.Second
+	updateInterval    = 30 * time.Second
 
-	envBotID = "DBL_BOT_ID"
-	envToken = "DBL_BOT_TOKEN" // nolint:gosec // Credential from environment variable, not hardcoded
+	envDBLBotID     = "DBL_BOT_ID"
+	envDBLBotToken  = "DBL_BOT_TOKEN" // nolint:gosec // Credential from environment variable, not hardcoded
+	envDBGGBotID    = "DBGG_BOT_ID"
+	envDBGGBotToken = "DBGG_BOT_TOKEN" // nolint:gosec // Credential from environment variable, not hardcoded
 
 	prometheusURL = "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
 
-	errEnvNotFound = "%s not defined"
+	errEnvNotFound = "unable to lookup %s: not defined in environment variables"
 )
 
-func environmentLookup() (dblBotID, token string, err error) {
+func dblEnvironmentLookup() (dblBotID, dblBotToken string, err error) {
 	var found bool
 
-	dblBotID, found = os.LookupEnv(envBotID)
+	dblBotID, found = os.LookupEnv(envDBLBotID)
 	if !found {
-		return "", "", fmt.Errorf(errEnvNotFound, envBotID)
+		return "", "", fmt.Errorf(errEnvNotFound, envDBLBotID)
 	}
 
-	token, found = os.LookupEnv(envToken)
+	dblBotToken, found = os.LookupEnv(envDBLBotToken)
 	if !found {
-		return "", "", fmt.Errorf(errEnvNotFound, envToken)
+		return "", "", fmt.Errorf(errEnvNotFound, envDBLBotToken)
+	}
+
+	return
+}
+
+func dbggEnvironmentLookup() (dbggBotID, dbggBotToken string, err error) {
+	var found bool
+
+	dbggBotID, found = os.LookupEnv(envDBGGBotID)
+	if !found {
+		return "", "", fmt.Errorf(errEnvNotFound, envDBGGBotID)
+	}
+
+	dbggBotToken, found = os.LookupEnv(envDBGGBotToken)
+	if !found {
+		return "", "", fmt.Errorf(errEnvNotFound, envDBGGBotToken)
 	}
 
 	return
@@ -49,25 +69,39 @@ func updateDiscordBotList(dblClient *discordbotlist.Client) error {
 	return dblClient.Update(ctx)
 }
 
+func updateDiscordBotsGG(dbggClient *discordbotsgg.Client) error {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), contextTimeout)
+	defer ctxCancel()
+
+	return dbggClient.Update(ctx)
+}
+
 func main() {
 	log.Printf("ephemeral-roles-informer starting up")
 
-	dblBotID, token, err := environmentLookup()
-	if err != nil {
-		log.Fatalf("Error looking up environment variables: %s", err)
-	}
-
 	datastoreProvider, err := prometheus.NewProvider(prometheusURL)
 	if err != nil {
-		log.Fatalf("Error creating new Prometheus provider: %s", err)
+		log.Fatalf("Error: %s", err)
 	}
 
-	httpClient := &http.Client{Timeout: contextTimeout}
+	httpClient := &http.Client{Timeout: connectionTimeout}
 
-	dblClient, err := discordbotlist.New(dblBotID, token, httpClient, datastoreProvider)
+	dblBotID, dblBotToken, err := dblEnvironmentLookup()
 	if err != nil {
-		log.Fatalf("Error creating new Discord Bot List client: %s", err)
+		log.Fatalf("Error: %s", err)
 	}
+
+	dblClient, err := discordbotlist.NewClient(httpClient, dblBotID, dblBotToken, datastoreProvider)
+	if err != nil {
+		log.Fatalf("Error: %s", err)
+	}
+
+	dbggBotID, dbggBotToken, err := dbggEnvironmentLookup()
+	if err != nil {
+		log.Fatalf("Error: %s", err)
+	}
+
+	dbggClient := discordbotsgg.NewClient(httpClient, dbggBotID, dbggBotToken, datastoreProvider)
 
 	sigTerm := make(chan os.Signal, 1)
 	signal.Notify(sigTerm, syscall.SIGTERM)
@@ -78,10 +112,19 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			err = updateDiscordBotList(dblClient)
-			if err != nil {
-				log.Printf("Error updating Discord Bot List: %s", err)
-			}
+			go func() {
+				err = updateDiscordBotList(dblClient)
+				if err != nil {
+					log.Printf("Error updating Discord Bot List: %s", err)
+				}
+			}()
+
+			go func() {
+				err = updateDiscordBotsGG(dbggClient)
+				if err != nil {
+					log.Printf("Error updating discord.bots.gg: %s", err)
+				}
+			}()
 		case <-sigTerm:
 			return
 		}

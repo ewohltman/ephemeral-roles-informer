@@ -1,5 +1,5 @@
-// Package discordbotlist provides an implementation for updating Discord Bot List (https://top.gg).
-package discordbotlist
+// Package discordbotsgg provides an implementation for updating discord.bots.gg.
+package discordbotsgg
 
 import (
 	"context"
@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/DiscordBotList/go-dbl"
+	"github.com/ewohltman/go-discordbotsgg/pkg/api"
+	"github.com/ewohltman/go-discordbotsgg/pkg/discordbotsgg"
 
 	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/datastore"
 )
@@ -21,8 +22,8 @@ type HTTPClient interface {
 // Client contains a *dbl.DBLClient, dblBotID, and datastore.Provider for updating
 // Discord Bots List.
 type Client struct {
-	dblClient         *dbl.Client
-	dblBotID          string
+	dbggClient        *discordbotsgg.Client
+	dbggBotID         string
 	datastoreProvider datastore.Provider
 
 	mutex            sync.Mutex
@@ -30,17 +31,14 @@ type Client struct {
 }
 
 // NewClient returns a new *Client to update Discord Bots List.
-func NewClient(httpClient HTTPClient, dblBotID, dblBotToken string, datastoreProvider datastore.Provider) (*Client, error) {
-	client, err := dbl.NewClient(dblBotToken, dbl.HTTPClientOption(httpClient))
-	if err != nil {
-		return nil, fmt.Errorf("unable to create new discord bot list client: %w", err)
-	}
+func NewClient(httpClient HTTPClient, dbggBotID, dbggToken string, datastoreProvider datastore.Provider) *Client {
+	dbggClient := discordbotsgg.NewClient(httpClient, dbggToken)
 
 	return &Client{
-		dblClient:         client,
-		dblBotID:          dblBotID,
+		dbggClient:        dbggClient,
+		dbggBotID:         dbggBotID,
 		datastoreProvider: datastoreProvider,
-	}, nil
+	}
 }
 
 // Update updates Discord Bot List with server counts obtained from a
@@ -63,17 +61,22 @@ func (client *Client) Update(ctx context.Context) error {
 	if serverCounts > client.lastServerCounts {
 		client.lastServerCounts = serverCounts
 
-		err = client.dblClient.PostBotStats(
-			client.dblBotID,
-			&dbl.BotStatsPayload{
-				Shards: shardServerCounts,
-			},
-		)
-		if err != nil {
-			return fmt.Errorf("unable to update bot stats: %w", err)
+		for i := range shardServerCounts {
+			_, err = client.dbggClient.UpdateWithContext(
+				ctx, client.dbggBotID, &api.StatsUpdate{
+					Stats: api.Stats{
+						GuildCount: shardServerCounts[i],
+						ShardCount: len(shardServerCounts),
+					},
+					ShardID: i,
+				},
+			)
+			if err != nil {
+				return fmt.Errorf("unable to update bot stats: %w", err)
+			}
 		}
 
-		log.Printf("Updated Discord Bot List: %d", client.lastServerCounts)
+		log.Printf("Updated discord.bots.gg: %d", client.lastServerCounts)
 	}
 
 	return nil
