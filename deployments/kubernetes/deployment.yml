@@ -26,6 +26,10 @@ spec:
               value: "{DBL_BOT_ID}"
             - name: DBL_BOT_TOKEN
               value: "{DBL_BOT_TOKEN}"
+            - name: DBGG_BOT_ID
+              value: "{DBGG_BOT_ID}"
+            - name: DBGG_BOT_TOKEN
+              value: "{DBGG_BOT_TOKEN}"
           resources:
             limits:
               cpu: "50m"

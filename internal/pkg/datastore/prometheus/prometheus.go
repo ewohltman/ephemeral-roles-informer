@@ -35,7 +35,7 @@ type Provider struct {
 func NewProvider(prometheusURL string) (*Provider, error) {
 	client, err := api.NewClient(api.Config{Address: prometheusURL})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to create new Prometheus provider: %w", err)
 	}
 
 	return &Provider{API: v1.NewAPI(client)}, nil
