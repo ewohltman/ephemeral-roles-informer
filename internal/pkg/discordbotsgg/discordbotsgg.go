@@ -75,7 +75,7 @@ func (client *Client) Update(ctx context.Context) error {
 				return fmt.Errorf("unable to update bot stats: %w", err)
 			}
 
-			log.Printf("Updated discord.bots.gg shard %d: %+v", i, statsResponse)
+			log.Printf("Updated discord.bots.gg shard %d: %s", i, statsResponse)
 		}
 
 		log.Printf("Updated discord.bots.gg: %d", client.lastServerCounts)
