@@ -64,7 +64,7 @@ func (client *Client) Update(ctx context.Context) error {
 		for i := range shardServerCounts {
 			statsResponse, err := client.dbggClient.UpdateWithContext(
 				ctx, client.dbggBotID, &api.StatsUpdate{
-					Stats: api.Stats{
+					Stats: &api.Stats{
 						GuildCount: shardServerCounts[i],
 						ShardCount: len(shardServerCounts),
 					},
