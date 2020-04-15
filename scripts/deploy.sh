@@ -28,7 +28,7 @@ applyValues() {
 
 deploy() {
   kubectl apply -f "${VARIABLIZED_DEPLOYMENT_YML}"
-  kubectl -n ephemeral-roles rollout status --timeout 120s deployment/dbl-updater
+  kubectl -n ephemeral-roles rollout status --timeout 120s deployment/ephemeral-roles-informer
 }
 
 cleanup() {

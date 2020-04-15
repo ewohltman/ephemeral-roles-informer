@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ewohltman/dbl-updater/internal/pkg/datastore"
+	"github.com/ewohltman/ephemeral-roles-informer/internal/pkg/datastore"
 )
 
 const contextTimeout = 10 * time.Second

@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dbl-updater
+  name: ephemeral-roles-informer
   namespace: ephemeral-roles
   labels:
-    app: dbl-updater
+    app: ephemeral-roles-informer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dbl-updater
+      app: ephemeral-roles-informer
   template:
     metadata:
       labels:
-        app: dbl-updater
+        app: ephemeral-roles-informer
         version: "{COMMIT}"
     spec:
       containers:
-        - name: dbl-updater
-          image: ewohltman/dbl-updater:latest
+        - name: ephemeral-roles-informer
+          image: ewohltman/ephemeral-roles-informer:latest
           imagePullPolicy: Always
           env:
             - name: DBL_BOT_ID
