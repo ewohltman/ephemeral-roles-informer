@@ -64,26 +64,21 @@ func (client *Client) Update(ctx context.Context) error {
 	defer client.mutex.Unlock()
 
 	if serverCounts > client.lastServerCounts {
-		client.lastServerCounts = serverCounts
-
-		for i := range shardServerCounts {
-			statsResponse, err := client.dbggClient.UpdateWithContext(
-				ctx, client.dbggBotID, &api.StatsUpdate{
-					Stats: &api.Stats{
-						GuildCount: shardServerCounts[i],
-						ShardCount: len(shardServerCounts),
-					},
-					ShardID: i,
+		statsResponse, err := client.dbggClient.UpdateWithContext(
+			ctx, client.dbggBotID, &api.StatsUpdate{
+				Stats: &api.Stats{
+					GuildCount: serverCounts,
+					ShardCount: len(shardServerCounts),
 				},
-			)
-			if err != nil {
-				return fmt.Errorf("unable to update bot stats: %w", err)
-			}
-
-			log.Printf("Updated discord.bots.gg shard %d: %s", i, statsResponse)
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("unable to update bot stats: %w", err)
 		}
 
-		log.Printf("Updated discord.bots.gg: %d", client.lastServerCounts)
+		client.lastServerCounts = serverCounts
+
+		log.Printf("Updated discord.bots.gg: %s", statsResponse)
 	}
 
 	return nil
