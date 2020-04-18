@@ -61,8 +61,6 @@ func (client *Client) Update(ctx context.Context) error {
 	defer client.mutex.Unlock()
 
 	if serverCounts > client.lastServerCounts {
-		client.lastServerCounts = serverCounts
-
 		err = client.dblClient.PostBotStats(
 			client.dblBotID,
 			&dbl.BotStatsPayload{
@@ -72,6 +70,8 @@ func (client *Client) Update(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("unable to update bot stats: %w", err)
 		}
+
+		client.lastServerCounts = serverCounts
 
 		log.Printf("Updated Discord Bot List: %d", client.lastServerCounts)
 	}
