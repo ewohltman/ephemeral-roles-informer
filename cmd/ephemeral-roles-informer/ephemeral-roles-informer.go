@@ -102,6 +102,7 @@ func main() {
 	}
 
 	dbggClient := discordbotsgg.NewClient(httpClient, dbggBotID, dbggBotToken, datastoreProvider)
+	defer dbggClient.Close()
 
 	sigTerm := make(chan os.Signal, 1)
 	signal.Notify(sigTerm, syscall.SIGTERM)
