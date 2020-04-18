@@ -41,6 +41,11 @@ func NewClient(httpClient HTTPClient, dbggBotID, dbggToken string, datastoreProv
 	}
 }
 
+// Close stops the *Client rate limiting time.Tickers to release resources.
+func (client *Client) Close() {
+	client.dbggClient.Close()
+}
+
 // Update updates Discord Bot List with server counts obtained from a
 // datastore.Provider.
 func (client *Client) Update(ctx context.Context) error {
