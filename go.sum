@@ -15,6 +15,8 @@ github.com/ewohltman/go-discordbotsgg v0.1.3 h1:ewUfIueeBoV9G9lcDyjrbvx2YksL8mL9
 github.com/ewohltman/go-discordbotsgg v0.1.3/go.mod h1:VpyBVPyxQ/yjAufS5CUmgUXwW7HUCuIuN5vT9WxESHU=
 github.com/ewohltman/go-discordbotsgg v0.2.0 h1:RQ63q6oNG0Fa0gHrS/P8YLmTlR3l6mASiEgIt2BlzPM=
 github.com/ewohltman/go-discordbotsgg v0.2.0/go.mod h1:VpyBVPyxQ/yjAufS5CUmgUXwW7HUCuIuN5vT9WxESHU=
+github.com/ewohltman/go-discordbotsgg v0.2.1 h1:K8EXsbyatY3pTLb3bo/cnIyaKe08W88yIHP7VDAcLrI=
+github.com/ewohltman/go-discordbotsgg v0.2.1/go.mod h1:viRrIXQvAlIfkUex//xymN+V57DcySSiMqFtrIcKzcc=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-kit/kit v0.9.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9GBnD5lWE=
