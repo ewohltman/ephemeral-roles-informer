@@ -14,7 +14,6 @@ test:
 	go test -v -race -coverprofile=coverage.out ./...
 
 build:
-	@echo "Build image: ${version}"
 	CGO_ENABLED=0 go build -o build/package/ephemeral-roles-informer/ephemeral-roles-informer cmd/ephemeral-roles-informer/ephemeral-roles-informer.go
 
 image:
