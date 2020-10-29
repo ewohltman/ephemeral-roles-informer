@@ -15,21 +15,34 @@ spec:
     metadata:
       labels:
         app: ephemeral-roles-informer
-        version: "{COMMIT}"
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
         - name: ephemeral-roles-informer
-          image: ewohltman/ephemeral-roles-informer:latest
+          image: ewohltman/ephemeral-roles-informer:v0.1.0
           imagePullPolicy: Always
           env:
             - name: DBL_BOT_ID
-              value: "{DBL_BOT_ID}"
+              valueFrom:
+                secretKeyRef:
+                  name: ephemeral-roles
+                  key: dbl-bot-id
             - name: DBL_BOT_TOKEN
-              value: "{DBL_BOT_TOKEN}"
+              valueFrom:
+                secretKeyRef:
+                  name: ephemeral-roles
+                  key: dbl-bot-token
             - name: DBGG_BOT_ID
-              value: "{DBGG_BOT_ID}"
+              valueFrom:
+                secretKeyRef:
+                  name: ephemeral-roles
+                  key: dbgg-bot-id
             - name: DBGG_BOT_TOKEN
-              value: "{DBGG_BOT_TOKEN}"
+              valueFrom:
+                secretKeyRef:
+                  name: ephemeral-roles
+                  key: dbgg-bot-token
           resources:
             limits:
               cpu: "50m"
