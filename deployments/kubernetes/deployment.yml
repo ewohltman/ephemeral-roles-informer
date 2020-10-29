@@ -22,6 +22,8 @@ spec:
         - name: ephemeral-roles-informer
           image: ewohltman/ephemeral-roles-informer:v0.1.0
           imagePullPolicy: Always
+          securityContext:
+            runAsNonRoot: true
           env:
             - name: DBL_BOT_ID
               valueFrom:
