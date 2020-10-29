@@ -24,7 +24,7 @@ image:
 push:
 	docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
 	docker push ewohltman/ephemeral-roles-informer:${version}
-	docker tag ewohltman/ephemeral-roles-informer:${version} ewohltman/ephemeral-roles-informer:${version}:latest
+	docker tag ewohltman/ephemeral-roles-informer:${version} ewohltman/ephemeral-roles-informer:latest
 	docker logout
 
 deploy:
