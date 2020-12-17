@@ -20,7 +20,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: ephemeral-roles-informer
-          image: ewohltman/ephemeral-roles-informer:v0.1.0
+          image: ewohltman/ephemeral-roles-informer:v0.1.1
           imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
