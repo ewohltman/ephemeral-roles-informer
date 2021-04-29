@@ -1,6 +1,6 @@
 module github.com/ewohltman/ephemeral-roles-informer
 
-go 1.15
+go 1.16
 
 require (
 	github.com/DiscordBotList/go-dbl v0.0.0-20200314154711-a742304d6e1f
